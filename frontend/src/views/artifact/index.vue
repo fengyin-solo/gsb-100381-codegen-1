@@ -11,6 +11,8 @@
       </div>
     </header>
 
+    <TodoPanel todo-key="artifact_recheck" title="遗物复核清单（交接待办）" />
+
     <div class="stat-row">
       <article v-for="item in stats" :key="item.label" class="stat-card">
         <span class="stat-label">{{ item.label }}</span>
@@ -79,6 +81,7 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
+import TodoPanel from '@/components/TodoPanel.vue'
 import type { EntryRow } from '@/data/types'
 
 const meta = moduleMeta('artifact')
