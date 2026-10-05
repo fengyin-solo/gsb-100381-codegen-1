@@ -11,6 +11,13 @@
       </div>
     </header>
 
+    <HandoverTodoPanel
+      module="artifact"
+      title="交接待办 · 遗物复核清单"
+      :todos="todos"
+      @complete="handleCompleteTodo"
+    />
+
     <div class="stat-row">
       <article v-for="item in stats" :key="item.label" class="stat-card">
         <span class="stat-label">{{ item.label }}</span>
@@ -79,7 +86,9 @@ import {
   moduleMeta,
   runAction as applyAction,
 } from '@/api/local-service'
-import type { EntryRow } from '@/data/types'
+import { completeTodo, listTodos } from '@/api/handover'
+import HandoverTodoPanel from '@/components/HandoverTodoPanel.vue'
+import type { EntryRow, HandoverTodo } from '@/data/types'
 
 const meta = moduleMeta('artifact')
 const columns = ["器物编号", "出土探方", "出土层位", "器物质地", "器物类型", "完残程度", "登记人", "登记状态"]
@@ -92,6 +101,7 @@ const total = ref(0)
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
 const filterFields = columns.slice(0, 3)
+const todos = ref<HandoverTodo[]>([])
 const statusSummary = computed(() =>
   statuses.map((status: string) => ({
     status,
@@ -110,6 +120,15 @@ function exportRows() {
 
 function openCreate() {
   errorMessage.value = '出土遗物登记入口尚未接入审批流'
+}
+
+function loadTodos() {
+  todos.value = listTodos('artifact')
+}
+
+function handleCompleteTodo(id: number) {
+  completeTodo(id)
+  loadTodos()
 }
 
 function runAction(action: string, row: EntryRow) {
@@ -133,5 +152,8 @@ function reload() {
   }
 }
 
-onMounted(reload)
+onMounted(() => {
+  reload()
+  loadTodos()
+})
 </script>
